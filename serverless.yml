@@ -1,0 +1,32 @@
+service: interactions
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-1
+  stage: STAGE
+  memorySize: 128
+  timeout: 3
+  endpointType: regional
+
+layers:
+  node_modules:
+    path: ../nodejs
+
+functions:
+  lambda-caller:
+    handler: caller.handler
+    description: function which invokes another lambda
+    timeout: 15
+    layers:
+      - { Ref: NodeUnderscoremodulesLambdaLayer }
+    events:
+      - http:
+          path: caller
+          method: get
+  lambda-callee:
+    handler: callee.handler
+    description: lambda which gets invoked
+    timeout: 15
+    layers:
+      - { Ref: NodeUnderscoremodulesLambdaLayer }
